@@ -1,0 +1,19 @@
+services:
+  # Nginx
+  web:
+    container_name: nginx
+    image: nginx:latest
+    ports:
+      - "8080:80"
+    volumes:
+      - ./php/:/var/www/
+      - ./nginx.php-fpm.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - php-fpm
+
+  # Configuración de php-fpm
+  php-fpm:
+    container_name: php
+    build: .
+    volumes:
+      - ./php/:/var/www/html
