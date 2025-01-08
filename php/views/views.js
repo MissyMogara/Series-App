@@ -5,7 +5,7 @@ async function start() {
     
     if (localStorage.getItem('authenticated')) {
         const series = await apiGetSeries();
-        loadHomePage();  // If authenticated, load the home page
+        loadHomePage(series);  // If authenticated, load the home page
     } else {
         loadLoginPage();  // If not authenticated, load the login page
     }
@@ -40,7 +40,7 @@ async function apiLogin() {
         "email": email,
         "password": password
     };
-
+    
     try {
         const response = await fetch(`http://${api_ip}:3000/api/login`, {
             method: 'POST', 
@@ -49,13 +49,12 @@ async function apiLogin() {
             },
             body: JSON.stringify(data)
         });
-
         
         if (response.ok) {
             const result = await response.json();
             localStorage.setItem('authenticated', true);  // Store authentication status
             localStorage.setItem('token', result.token);  // Store token
-            const series = apiGetSeries();
+            const series = await apiGetSeries();
             console.log(series);
             loadHomePage(series);  // Load home page
         } else {
@@ -67,17 +66,56 @@ async function apiLogin() {
 }
 // Load series
 async function apiGetSeries() {
+    let token = "";
+
+    if (localStorage.getItem('token')) {
+        token = localStorage.getItem('token');
+    } else {
+        console.error("No hay token en la sesión.");
+        return;
+    }
+
     try {
         const response = await fetch(`http://${api_ip}:3000/api/series`, {
             method: 'GET', 
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': token
             },
         });
         
         if (response.ok) {
             const result = await response.json();
-            console.log(result);
+            return result;
+        } else {
+            console.error('Error en la solicitud:', response.status, response.statusText);
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}
+// Load top ten series
+async function apiGetTopTenSeries(){
+    let token = "";
+
+    if (localStorage.getItem('token')) {
+        token = localStorage.getItem('token');
+    } else {
+        console.error("No hay token en la sesión.");
+        return;
+    }
+
+    try {
+        const response = await fetch(`http://${api_ip}:3000/api/series/toprated`, {
+            method: 'GET', 
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': token
+            },
+        });
+        
+        if (response.ok) {
+            const result = await response.json();
             return result;
         } else {
             console.error('Error en la solicitud:', response.status, response.statusText);
@@ -115,7 +153,65 @@ function loadRegisterForm() {
 
 // Function that loads the home page
 function loadHomePage(series) {
-    loadComponent(() => HomePage(series));
+    const homeContent = HomePage(series);
+    loadComponent(() => homeContent);
+    const logoutButton = document.getElementById('logoutButton');
+    logoutButton.addEventListener('click', (event) => {
+        localStorage.removeItem('authenticated');  // Remove authentication status
+        localStorage.removeItem('token');  // Remove token
+        loadLoginPage();
+    });
+    if(document.getElementById('topTenButton')){
+        const topTenButton = document.getElementById('topTenButton');
+        topTenButton.addEventListener('click', async () => {
+            const topTenSeries = await apiGetTopTenSeries(); 
+            loadTopTenPage(topTenSeries);
+        });
+    }
+    console.log(series);
+    // Create cards
+    series.forEach(serie => {
+        const divCard = document.createElement('div');
+        divCard.className = 'card';
+        const image = document.createElement('img');
+        image.src = serie.imagen;
+        const title = document.createElement('h3');
+        title.textContent = serie.titulo;
+        divCard.appendChild(image);
+        divCard.appendChild(title);
+        document.getElementById("series").appendChild(divCard);
+    });
+}
+
+// Function that loads top ten page
+async function loadTopTenPage(topTenSeries) {
+    loadComponent(HomePageTen);
+    const logoutButton = document.getElementById('logoutButton');
+    logoutButton.addEventListener('click', (event) => {
+        localStorage.removeItem('authenticated');  // Remove authentication status
+        localStorage.removeItem('token');  // Remove token
+        loadLoginPage();
+    });
+
+    if(document.getElementById('verTodasButton')){
+        const verTodasButton = document.getElementById('verTodasButton');
+        verTodasButton.addEventListener('click', async () => {
+            const series = await apiGetSeries(); 
+            loadHomePage(series);
+        });
+    }
+
+    topTenSeries.forEach(serie => {
+        const divCard = document.createElement('div');
+        divCard.className = 'card';
+        const image = document.createElement('img');
+        image.src = serie.imagen;
+        const title = document.createElement('h3');
+        title.textContent = serie.titulo;
+        divCard.appendChild(image);
+        divCard.appendChild(title);
+        document.getElementById("series").appendChild(divCard);
+    });
 }
 
 
@@ -157,13 +253,24 @@ function Register() {
 }
 
 // Home component
-function HomePage(series) {
-    // To finalize
-    console.log(series);
+function HomePage() {
     return `
     <div class="home-container">
-        <h1>Bienvenido a la Página Principal</h1>
-        <button id="logoutButton">Cerrar Sesión</button>
+        <h1>Series Mogara</h1>
+        <button id="topTenButton" class="topTenButton">Ver top 10 series</button>
+        <div id="series" class="series"></div>
+        <button id="logoutButton" class="logoutButton">Cerrar Sesión</button>
+    </div>
+    `;
+}
+
+function HomePageTen() {
+    return `
+    <div class="home-container">
+        <h1>Top 10 series</h1>
+        <button id="verTodasButton" class="verTodasButton">Ver todas las series</button>
+        <div id="series" class="series"></div>
+        <button id="logoutButton" class="logoutButton">Cerrar Sesión</button>
     </div>
     `;
 }

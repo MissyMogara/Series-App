@@ -6,7 +6,7 @@ body
     display: flex; 
     justify-content: center; 
     align-items: center; 
-    height: 100vh; margin: 0; 
+    margin: 0; 
 } 
 /* Login Form */
 .login-container 
@@ -88,4 +88,94 @@ body
 .register-container button:hover 
 {  
     background-color: #1e7e34; 
+}
+
+/* Home page */
+
+.home-container 
+{
+    text-align: center;
+    background-color: #f0f0f0;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.home-container h1 
+{
+    margin: 0 0 15px;
+    text-align: center;
+}
+
+.series 
+{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: auto;
+}
+
+.card
+{
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    padding: 10px;
+    margin: 10px;
+    text-align: center;
+}
+
+.card img 
+{
+    max-width: 200px;
+    height: 350px;
+}
+
+.logoutButton
+{
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #dc3545;
+    border: none;
+    border-radius: 3px;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.logoutButton:hover 
+{
+    background-color: #c3272d;
+}
+
+.topTenButton
+{
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #17a2b8;
+    border: none;
+    border-radius: 3px;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.topTenButton:hover
+{
+    background-color: #138496;
+}
+
+.verTodasButton
+{
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #ffc107;
+    border: none;
+    border-radius: 3px;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.verTodasButton:hover
+{
+    background-color: #ffc950;
 }
