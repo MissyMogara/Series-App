@@ -173,12 +173,50 @@ function loadHomePage(series) {
     series.forEach(serie => {
         const divCard = document.createElement('div');
         divCard.className = 'card';
+        // Stars
+        const divStar = document.createElement('div');
+        divStar.className ='star-rating';
+        for(let i = 0; i < 5; i++) {
+            const star = document.createElement('img');
+            star.className = 'img-star';
+            star.src = './views/assets/icons/star-off.png';
+            star.setAttribute('data-index', i + 1); 
+
+            star.addEventListener('mouseenter', () => {
+                star.src = './views/assets/icons/star.png';
+                
+                const index = parseInt(star.getAttribute('data-index'));
+                const allStars = divStar.querySelectorAll('.img-star');
+
+                allStars.forEach((s, j) => {
+                    
+                    if (j < index) {
+                        s.src = './views/assets/icons/star.png';
+                    } else {
+                        s.src = './views/assets/icons/star-off.png'; 
+                    }
+                });
+
+            });
+            star.addEventListener('mouseleave', () => {
+                star.src = './views/assets/icons/star-off.png';
+                const index = parseInt(star.getAttribute('data-index'));
+                const allStars = divStar.querySelectorAll('.img-star');
+
+                allStars.forEach((star) => {
+                    star.src = './views/assets/icons/star-off.png';
+                });
+            });
+            divStar.appendChild(star);
+        }
+
         const image = document.createElement('img');
         image.src = serie.imagen;
         const title = document.createElement('h3');
         title.textContent = serie.titulo;
         divCard.appendChild(image);
         divCard.appendChild(title);
+        divCard.appendChild(divStar);
         document.getElementById("series").appendChild(divCard);
     });
 }

@@ -129,6 +129,12 @@ body
     height: 350px;
 }
 
+.img-star 
+{
+    max-width: 32px;
+    max-height: 32px;
+}
+
 .logoutButton
 {
     margin-top: 10px;
