@@ -165,7 +165,50 @@ async function rateSeries(id, num){
 }
 // Register users
 async function apiRegister() {
+    let nameUser = "";
+    const lastName = "";
+
+    if(document.getElementById('reg-name')){
+        let nameUser = document.getElementById('reg-name').value;
+    }
+    if(document.getElementById('reg-lastName')) {
+        let lastName = document.getElementById('reg-lastName').value;
+    }
     
+    const email = document.getElementById('reg-email').value;
+    const password = document.getElementById('reg-password').value;
+
+    const data = {
+        "name": nameUser,
+        "lastName": lastName,
+        "email": email,
+        "password": password
+    }
+
+    console.log(data);
+
+    try {
+        const response = await fetch(`http://${api_ip}:3000/api/register`, {
+            method: 'POST', 
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+            
+        });
+        
+        if (response.ok) {
+            const result = await response.json();
+            console.log(result);
+            loadLoginPage();
+            return result;
+        } else {
+            console.error('Error en la solicitud:', response.status, response.statusText);
+        }
+    } catch (error) {
+        console.log(error);
+    }
+
 }
 // ---Functions---
 // Function that loads the login page
@@ -191,6 +234,9 @@ function loadRegisterForm() {
     loginLink.addEventListener('click', (event) => {
         loadLoginPage();
     });
+
+    const registerButton = document.getElementById('registerButton');
+    registerButton.addEventListener('click', apiRegister);  // Call API to register user
     
 }
 
@@ -326,11 +372,11 @@ function Register() {
     return `
     <div class="register-container">
         <h2>Registro</h2>
-        <input type="text" placeholder="Nombre">
-        <input type="text" placeholder="Apellidos">
-        <input type="email" placeholder="Email" required>
-        <input type="password" placeholder="Contraseña" required>
-        <button>Registrarse</button>
+        <input type="text" placeholder="Nombre" id="reg-name">
+        <input type="text" placeholder="Apellidos" id="reg-lastName">
+        <input type="email" placeholder="Email" required id="reg-email">
+        <input type="password" placeholder="Contraseña" required id="reg-password">
+        <button id="registerButton">Registrarse</button>
         <button id="loginLink">Volver</button>
     </div>
     `;
