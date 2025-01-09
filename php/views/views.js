@@ -124,6 +124,49 @@ async function apiGetTopTenSeries(){
         console.log(error);
     }
 }
+
+// Rate series
+async function rateSeries(id, num){
+    let token = "";
+
+    const data = {
+        "puntuacionTotal": num
+    }
+
+    if (localStorage.getItem('token')) {
+        token = localStorage.getItem('token');
+    } else {
+        console.error("No hay token en la sesión.");
+        return;
+    }
+
+    try {
+        const response = await fetch(`http://${api_ip}:3000/api/series/${id}`, {
+            method: 'PUT', 
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': token
+            },
+            body: JSON.stringify(data)
+            
+        });
+        
+        if (response.ok) {
+            const result = await response.json();
+            console.log(result);
+            return result;
+        } else {
+            console.error('Error en la solicitud:', response.status, response.statusText);
+        }
+    } catch (error) {
+        console.log(error);
+    }
+
+}
+// Register users
+async function apiRegister() {
+    
+}
 // ---Functions---
 // Function that loads the login page
 function loadLoginPage() {
@@ -206,6 +249,9 @@ function loadHomePage(series) {
                 allStars.forEach((star) => {
                     star.src = './views/assets/icons/star-off.png';
                 });
+            });
+            star.addEventListener('click', () => {
+                rateSeries(serie._id, parseInt(star.getAttribute('data-index'))); // Rate series
             });
             divStar.appendChild(star);
         }
@@ -293,23 +339,42 @@ function Register() {
 // Home component
 function HomePage() {
     return `
+    <header><h1>Series Mogara</h1></header>
     <div class="home-container">
-        <h1>Series Mogara</h1>
         <button id="topTenButton" class="topTenButton">Ver top 10 series</button>
         <div id="series" class="series"></div>
         <button id="logoutButton" class="logoutButton">Cerrar Sesión</button>
     </div>
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2025 TuEmpresa. Todos los derechos reservados.</p>
+            <p>
+                <a href="#">Política de Privacidad</a> | 
+                <a href="#">Términos de Servicio</a>
+            </p>
+        </div>
+    </footer>
     `;
 }
 
 function HomePageTen() {
     return `
+    <header><h1>Series Mogara</h1></header>
     <div class="home-container">
-        <h1>Top 10 series</h1>
+        <h2>Top 10 series</h2>
         <button id="verTodasButton" class="verTodasButton">Ver todas las series</button>
         <div id="series" class="series"></div>
         <button id="logoutButton" class="logoutButton">Cerrar Sesión</button>
     </div>
+        <footer>
+        <div class="footer-content">
+            <p>&copy; 2025 Mogara. Todos los derechos reservados.</p>
+            <p>
+                <a href="#">Política de Privacidad</a> | 
+                <a href="#">Términos de Servicio</a>
+            </p>
+        </div>
+    </footer>
     `;
 }
 
